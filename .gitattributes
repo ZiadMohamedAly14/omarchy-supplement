@@ -1,0 +1,7 @@
+# These repos are authored on Windows and run on Arch Linux.
+# Force LF everywhere — a shell script with CRLF fails on Linux with
+# "bad interpreter: /bin/bash^M".
+* text=auto eol=lf
+
+*.sh  text eol=lf
+*.lua text eol=lf
