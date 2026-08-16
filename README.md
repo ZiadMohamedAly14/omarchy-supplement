@@ -71,6 +71,8 @@ APPS=(
 
 ## Docs
 
-- [CLAUDE.md](CLAUDE.md) — Omarchy 4 facts, invariants, working rules
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — how the two repos combine
+- **[docs/GUIDE.md](docs/GUIDE.md) — start here.** The goal, the mental model, where
+  things go, common workflows, and the rules that must not be broken.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — how the pieces fit, and why
 - [docs/CONVENTIONS.md](docs/CONVENTIONS.md) — rules for writing scripts here
+- [CLAUDE.md](CLAUDE.md) — condensed rules Claude Code reads every session

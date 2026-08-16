@@ -19,7 +19,11 @@ In Omarchy 4 the dotfiles repo carries most of the weight. All customisation —
 Hyprland — is now just files in `~/.config/`, which is exactly what Stow handles. This
 repo stays thin on purpose.
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how they combine, and
+**[docs/GUIDE.md](docs/GUIDE.md) is the orientation doc** — the goal, where things go, and
+common workflows end to end. Read it when the task is "add X to my setup" and you're not
+sure which repo or which list it belongs in.
+
+See also [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how they combine, and
 [docs/CONVENTIONS.md](docs/CONVENTIONS.md) for script rules.
 
 ---
@@ -134,7 +138,7 @@ shell or silently abort the run.
 
 ## Working here
 
-- **New tool** → `/add-install-script`. Check `omarchy install` and the base package list
+- **New tool** → `/add-software`. Check `omarchy install` and the base package list
   first; most of the time no new script is needed, just a list entry.
 - **Capture a config** → `/capture-dotfile`. Goes to the dotfiles repo, plus the
   `PACKAGES` array here.
