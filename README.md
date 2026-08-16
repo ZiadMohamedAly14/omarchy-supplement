@@ -4,13 +4,13 @@ Post-install bootstrap for a fresh [Omarchy 4](https://omarchy.org) machine.
 
 Omarchy gives you a complete desktop. This adds the handful of things it doesn't ship and
 links my config files into place. Pairs with
-**[dotfiles](https://github.com/ZiadMohamedAly/dotfiles)** — this repo *does* things, that
+**[dotfiles](https://github.com/ZiadMohamedAly14/dotfiles)** — this repo *does* things, that
 repo *is* things.
 
 ## Install
 
 ```bash
-git clone https://github.com/ZiadMohamedAly/omarchy-supplement.git ~/omarchy-supplement
+git clone https://github.com/ZiadMohamedAly14/omarchy-supplement.git ~/omarchy-supplement
 cd ~/omarchy-supplement
 ./install-all.sh
 ```

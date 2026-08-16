@@ -11,7 +11,7 @@ lists with commented examples.
 | Repo | Role |
 |---|---|
 | **omarchy-supplement** (this repo) | **Imperative.** Installs packages, runs Omarchy's installers, links the dotfiles. |
-| **[dotfiles](https://github.com/ZiadMohamedAly/dotfiles)** | **Declarative.** The config files themselves, deployed by GNU Stow. |
+| **[dotfiles](https://github.com/ZiadMohamedAly14/dotfiles)** | **Declarative.** The config files themselves, deployed by GNU Stow. |
 
 Rule: **changes system state → here. A file that lives in `$HOME` → dotfiles.**
 

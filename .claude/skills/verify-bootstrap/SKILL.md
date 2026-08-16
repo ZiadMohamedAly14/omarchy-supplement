@@ -87,7 +87,7 @@ package call missing `--noconfirm`. `sudo` is fine.
 
 - `~/dotfiles` is load-bearing (Stow resolves relative to the package parent) — fine, but
   must be consistent
-- `REPO_URL` points at `ZiadMohamedAly`, not an upstream fork
+- `REPO_URL` points at `ZiadMohamedAly14`, not an upstream fork
 - No hardcoded usernames — use `$HOME` / `$USER`
 - Machine-specific values (monitor names like `DP-4`) — note as a portability limit, not
   a bug

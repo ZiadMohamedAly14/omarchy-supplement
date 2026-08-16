@@ -6,7 +6,7 @@
 # deletes your data.
 set -euo pipefail
 
-REPO_URL="https://github.com/ZiadMohamedAly/dotfiles.git"
+REPO_URL="https://github.com/ZiadMohamedAly14/dotfiles.git"
 DOTFILES_DIR="$HOME/dotfiles" # Stow resolves links relative to this; keep it here.
 
 # Stow packages to deploy. Add a package to the dotfiles repo AND to this list —
