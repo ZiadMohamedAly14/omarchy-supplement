@@ -14,6 +14,8 @@ DOTFILES_DIR="$HOME/dotfiles" # Stow resolves links relative to this; keep it he
 PACKAGES=(
   bash
   hypr
+  alacritty
+  starship
 )
 
 if ! command -v stow &>/dev/null; then

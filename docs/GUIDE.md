@@ -154,11 +154,16 @@ omarchy install                                                       # official
 omarchy                                                               # all 424 commands
 ```
 
-Already in base — never install these:
+Already in base — never install these (verified on Omarchy 4.0.0):
 
-`tmux` `mise` `starship` `fzf` `zoxide` `lazygit` `git` `jq` `nvim` `alacritty` `foot` `yay`
+`tmux` `mise` `starship` `fzf` `zoxide` `lazygit` `git` `jq` `nvim` `foot` `yay`
+`docker` `docker-compose` `docker-buildx` `lazydocker` `ripgrep` `fd` `bat` `eza`
 
-Not in base, fair game: `stow` `zsh` `yazi` `postgresql` `ghostty`
+Not in base, fair game: `stow` `zsh` `yazi` `postgresql` `gh`
+
+**Terminals are the trap.** Only `foot` is in base. `alacritty`, `ghostty`, and
+`kitty` are installers — `omarchy install terminal <name>` — which also set the
+default terminal and `SUPER+Return`. Don't `pacman -S` them.
 
 ---
 

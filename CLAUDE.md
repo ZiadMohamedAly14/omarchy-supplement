@@ -85,9 +85,16 @@ package install** — they configure as well as install.
 
 ### These are already in base — never install them
 
-`tmux` `mise` `starship` `fzf` `zoxide` `lazygit` `git` `jq` `nvim` `alacritty` `foot` `yay`
+Verified against `omarchy-base.packages` on Omarchy 4.0.0:
 
-Not in base, so fair game: `stow` `zsh` `yazi` `postgresql` `ghostty`.
+`tmux` `mise` `starship` `fzf` `zoxide` `lazygit` `git` `jq` `nvim` `foot` `yay`
+`docker` `docker-compose` `docker-buildx` `lazydocker` `ripgrep` `fd` `bat` `eza`
+
+**`alacritty` is NOT in base** — it is `omarchy install terminal alacritty`, which
+also sets it as the default terminal. Same for `ghostty` and `kitty`. Only `foot`
+ships by default.
+
+Also not in base: `stow` `zsh` `yazi` `postgresql` `gh`.
 
 Check before adding: `grep -x <pkg> /usr/share/omarchy/install/omarchy-base.packages`
 
