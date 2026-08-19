@@ -132,6 +132,7 @@ with the system. Do not duplicate them here.
 
 ```
 ./install-all.sh
+  ├─ preflight.sh           pacman -Syu                 ← must precede everything
   ├─ remove-preinstalls.sh  omarchy remove preinstalls  ← must precede packages
   ├─ install-stow.sh        stow — not in base          ← must precede dotfiles
   ├─ install-packages.sh    extra Arch packages (list to grow)
@@ -141,6 +142,11 @@ with the system. Do not duplicate them here.
 
 Children are **executed, not sourced**, so a failure in one cannot corrupt the parent
 shell or silently abort the run.
+
+**`omarchy-pkg-add` does not refresh pacman's databases.** It calls `pacman -S` directly,
+and a fresh Omarchy machine can boot with no sync databases at all — every install then
+fails with `error: target not found`, including `stow`. That is what `preflight.sh` is
+for. Verified the hard way on a real fresh install.
 
 **`remove-preinstalls.sh` breaks the "already in base" shortcut.** It strips Omarchy's
 preinstalled set, and that set overlaps the base package list — `lazydocker` is in

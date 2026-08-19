@@ -14,9 +14,12 @@ run() {
 }
 
 # Order matters:
-#   - preinstalls are stripped first, so install-packages.sh can put back the
+#   - preflight refreshes pacman's databases; without it every install below
+#     dies with "error: target not found" on a fresh machine
+#   - preinstalls are stripped next, so install-packages.sh can put back the
 #     few worth keeping (it removes some base packages too — see that script)
 #   - stow must exist before dotfiles are linked
+run preflight.sh
 run remove-preinstalls.sh
 run install-stow.sh
 run install-packages.sh
