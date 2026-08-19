@@ -16,8 +16,9 @@ APPS=(
   "terminal alacritty"   # not in base; also sets the default + SUPER+Return
   "editor vscode"        # + Omarchy theme, secret storage, auto-update off
   "dev-env node"         # via mise; brings npm/npx
-  "browser chrome"       # React/Next devtools
   "docker dbs MongoDB"   # see the note below before changing this
+
+  # No browser entry on purpose — Omarchy's stock Chromium is the browser.
 
   # "dev-env bun"
   # "dev-env java"       # only for native React Native / Android builds
@@ -39,17 +40,23 @@ APPS=(
 
 if ((${#APPS[@]} == 0)); then
   echo "No Omarchy apps configured."
-  exit 0
+else
+  for app in "${APPS[@]}"; do
+    echo "──  omarchy install $app"
+    # shellcheck disable=SC2086
+    omarchy install $app || echo "warning: 'omarchy install $app' failed" >&2
+  done
 fi
 
-for app in "${APPS[@]}"; do
-  echo "──  omarchy install $app"
-  # shellcheck disable=SC2086
-  omarchy install $app || echo "warning: 'omarchy install $app' failed" >&2
-done
-
-# Set defaults once the apps exist. Uncomment what applies.
+# --- defaults -------------------------------------------------------------
 # `omarchy install terminal alacritty` already sets the terminal default, so
-# there is no `omarchy default terminal` line here.
-omarchy default editor code
-# omarchy default browser chrome
+# there is no `omarchy default terminal` line here. The browser default is left
+# alone too — Omarchy's stock Chromium is already it.
+#
+# Note: remove-preinstalls.sh drops the TUI menu entries (Docker, Disk Usage)
+# and they are deliberately not restored. install-packages.sh still reinstalls
+# lazydocker, so the binary is there — it just isn't in `omarchy menu`.
+# Guarded: if the vscode install above failed, `code` does not exist and this
+# would exit non-zero under `set -e`, aborting the bootstrap before the dotfiles
+# are ever stowed.
+omarchy default editor code || echo "warning: could not set the default editor" >&2

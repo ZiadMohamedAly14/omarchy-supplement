@@ -24,12 +24,15 @@ Safe to re-run. Nothing is deleted — any config Omarchy already placed is move
 
 | Script | |
 |---|---|
+| `remove-preinstalls.sh` | Strips Omarchy's preinstalled apps — skip with `OMARCHY_KEEP_PREINSTALLS=1` |
 | `install-stow.sh` | GNU Stow — the one thing needed before anything else |
 | `install-packages.sh` | Extra Arch packages, via `omarchy-pkg-add` / `omarchy-pkg-aur-add` |
 | `install-apps.sh` | Omarchy's own installers — VS Code, dev environments, services |
 | `install-dotfiles.sh` | Clones `~/dotfiles` and stows it into `$HOME` |
 
-`install-all.sh` runs all four in order.
+`install-all.sh` runs all five in order. The order is load-bearing: preinstalls are
+stripped before packages are put back, and the dotfiles are stowed **last** so that
+Omarchy's own installers write their configs before those paths become symlinks.
 
 ## Making it yours
 

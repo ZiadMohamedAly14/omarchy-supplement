@@ -19,8 +19,21 @@ set -euo pipefail
 
 # Official Arch repos. omarchy-pkg-add wraps `pacman -S --noconfirm --needed`.
 PACKAGES=(
-  gh                      # GitHub CLI; not in base
+  # --- put back after remove-preinstalls.sh -------------------------------
+  # Omarchy ships these by default, but `omarchy remove preinstalls` takes them
+  # out with everything else. They are listed here, not skipped as "already in
+  # base", precisely because that script runs first.
+  omacalc
+  omacut
+  omawrite
+  cliamp
+  lazydocker              # IS in omarchy-base.packages, and is still removed
+  qt6-multimedia          # cliamp pulls these; listed so a later orphan
+  qt6-multimedia-ffmpeg   # prune can't take them back out
+
+  # --- genuinely additional ----------------------------------------------
   ttf-cascadia-mono-nerd  # hard-referenced by the stowed alacritty.toml
+  discord                 # in `extra`, so no AUR build needed
 
   # android-tools         # adb/fastboot — enough for Expo Go on a real device
   # httpie
@@ -29,20 +42,41 @@ PACKAGES=(
 
 # AUR. Slower (builds from source) — prefer the official repos when possible.
 AUR_PACKAGES=(
-  # bruno-bin             # local-first API client
-  # mongodb-compass       # GUI; the VS Code Mongo extension covers most of it
+  # Cursor theme. Selected by HYPRCURSOR_THEME in the dotfiles' looknfeel.lua —
+  # if you rename one, rename the other or you get the default cursor back.
+  rose-pine-hyprcursor    # Hyprland-native cursor format
+  # rose-pine-cursor      # XCursor format, for XWayland/GTK apps — see note below
+
+  # Dev tooling. Both are prebuilt binaries, so these are fast despite being AUR.
+  mongodb-compass         # Mongo GUI
+  postman-bin             # API client
+
+  # bruno-bin             # lighter, git-friendly alternative to Postman
 )
 
-if ((${#PACKAGES[@]})); then
-  echo "Installing: ${PACKAGES[*]}"
-  omarchy-pkg-add "${PACKAGES[@]}"
-else
-  echo "No extra repo packages configured."
-fi
+# One bad package name fails the whole pacman transaction, and install-all.sh
+# treats a failed child as fatal — so a single typo here would abort the run
+# before install-dotfiles.sh, which is the part actually worth having.
+#
+# Batch first (one transaction, fast), then fall back to installing one at a
+# time so the rest still land and the failure is named.
+install_batch() {
+  local cmd=$1 label=$2
+  shift 2
+  (($#)) || {
+    echo "No $label packages configured."
+    return 0
+  }
 
-if ((${#AUR_PACKAGES[@]})); then
-  echo "Installing from AUR: ${AUR_PACKAGES[*]}"
-  omarchy-pkg-aur-add "${AUR_PACKAGES[@]}"
-else
-  echo "No AUR packages configured."
-fi
+  echo "Installing $label: $*"
+  "$cmd" "$@" && return 0
+
+  echo "warning: batch $label install failed — retrying individually" >&2
+  local pkg
+  for pkg in "$@"; do
+    "$cmd" "$pkg" || echo "warning: '$pkg' failed to install" >&2
+  done
+}
+
+install_batch omarchy-pkg-add repo "${PACKAGES[@]}"
+install_batch omarchy-pkg-aur-add AUR "${AUR_PACKAGES[@]}"

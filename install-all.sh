@@ -13,7 +13,11 @@ run() {
   }
 }
 
-# Order matters: stow must exist before dotfiles are linked.
+# Order matters:
+#   - preinstalls are stripped first, so install-packages.sh can put back the
+#     few worth keeping (it removes some base packages too — see that script)
+#   - stow must exist before dotfiles are linked
+run remove-preinstalls.sh
 run install-stow.sh
 run install-packages.sh
 run install-apps.sh

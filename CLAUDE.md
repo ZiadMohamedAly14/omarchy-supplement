@@ -132,6 +132,7 @@ with the system. Do not duplicate them here.
 
 ```
 ./install-all.sh
+  ├─ remove-preinstalls.sh  omarchy remove preinstalls  ← must precede packages
   ├─ install-stow.sh        stow — not in base          ← must precede dotfiles
   ├─ install-packages.sh    extra Arch packages (list to grow)
   ├─ install-apps.sh        `omarchy install ...` (list to grow)
@@ -140,6 +141,14 @@ with the system. Do not duplicate them here.
 
 Children are **executed, not sourced**, so a failure in one cannot corrupt the parent
 shell or silently abort the run.
+
+**`remove-preinstalls.sh` breaks the "already in base" shortcut.** It strips Omarchy's
+preinstalled set, and that set overlaps the base package list — `lazydocker` is in
+`omarchy-base.packages` and still gets removed. So a package being in base is no longer
+sufficient reason to leave it out of `install-packages.sh`. Anything wanted back must be
+listed there explicitly, and the list is checked against *what the removal actually took
+out*, not against the base list. Skip the removal entirely with
+`OMARCHY_KEEP_PREINSTALLS=1 ./install-all.sh`.
 
 ---
 

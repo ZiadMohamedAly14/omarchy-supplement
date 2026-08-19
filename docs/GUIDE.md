@@ -75,7 +75,8 @@ clone after bootstrap without losing anything.
 ### omarchy-supplement — the doer
 
 ```
-install-all.sh          ← entry point; runs the four below in order
+install-all.sh          ← entry point; runs the five below in order
+remove-preinstalls.sh     omarchy remove preinstalls    ← must precede packages
 install-stow.sh           GNU Stow (the only hard prerequisite)
 install-packages.sh       PACKAGES[] / AUR_PACKAGES[]   ← your Arch packages
 install-apps.sh           APPS[]                        ← your Omarchy installers
@@ -153,6 +154,11 @@ grep -x <package> /usr/share/omarchy/install/omarchy-base.packages   # already s
 omarchy install                                                       # official installer?
 omarchy                                                               # all 424 commands
 ```
+
+**Caveat since `remove-preinstalls.sh` joined the run:** the preinstalled set overlaps
+this list, so some of these get removed anyway — `lazydocker` is the known case. If you
+want a base package back after the strip, list it in `install-packages.sh`. Compare
+against what the removal printed, not against this list.
 
 Already in base — never install these (verified on Omarchy 4.0.0):
 
