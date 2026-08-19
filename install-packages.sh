@@ -40,19 +40,8 @@ PACKAGES=(
   # yazi
 )
 
-# AUR. Slower (builds from source) — prefer the official repos when possible.
-AUR_PACKAGES=(
-  # Cursor theme. Selected by HYPRCURSOR_THEME in the dotfiles' looknfeel.lua —
-  # if you rename one, rename the other or you get the default cursor back.
-  rose-pine-hyprcursor    # Hyprland-native cursor format
-  # rose-pine-cursor      # XCursor format, for XWayland/GTK apps — see note below
-
-  # Dev tooling. Both are prebuilt binaries, so these are fast despite being AUR.
-  mongodb-compass         # Mongo GUI
-  postman-bin             # API client
-
-  # bruno-bin             # lighter, git-friendly alternative to Postman
-)
+# AUR packages live in install-aur.sh, which runs LAST — after the dotfiles are
+# stowed — so a slow or broken source build cannot cost you the whole setup.
 
 # One bad package name fails the whole pacman transaction, and install-all.sh
 # treats a failed child as fatal — so a single typo here would abort the run
@@ -79,4 +68,3 @@ install_batch() {
 }
 
 install_batch omarchy-pkg-add repo "${PACKAGES[@]}"
-install_batch omarchy-pkg-aur-add AUR "${AUR_PACKAGES[@]}"

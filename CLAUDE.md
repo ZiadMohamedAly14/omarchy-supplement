@@ -148,6 +148,12 @@ and a fresh Omarchy machine can boot with no sync databases at all — every ins
 fails with `error: target not found`, including `stow`. That is what `preflight.sh` is
 for. Verified the hard way on a real fresh install.
 
+**Vet an AUR package's dependencies before adding it.** `yay -Si <pkg>` first. An Electron
+app whose PKGBUILD lacks a `-bin` variant will pull `electronNN`, which builds Chromium
+from source — a 29M-object clone plus a JDK/Rust/Qt5/LLVM toolchain, hours of compiling.
+`mongodb-compass` is the known case and is disabled in `install-aur.sh` for exactly this.
+Prefer a `-bin` variant always; `postman-bin` installs a tarball in seconds.
+
 **Never call `pacman -Syu` directly.** Omarchy ships a pacman pre-transaction hook that
 aborts the transaction and tells you to use `omarchy update`, which also snapshots,
 refreshes keyrings, runs migrations, fires post-update hooks, and does the restart check.

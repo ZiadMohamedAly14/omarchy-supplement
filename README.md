@@ -27,14 +27,19 @@ Safe to re-run. Nothing is deleted — any config Omarchy already placed is move
 | `preflight.sh` | `omarchy update` — a fresh machine has no sync databases, so nothing installs without this |
 | `remove-preinstalls.sh` | Strips Omarchy's preinstalled apps — skip with `OMARCHY_KEEP_PREINSTALLS=1` |
 | `install-stow.sh` | GNU Stow — the one thing needed before anything else |
-| `install-packages.sh` | Extra Arch packages, via `omarchy-pkg-add` / `omarchy-pkg-aur-add` |
+| `install-packages.sh` | Extra Arch packages, via `omarchy-pkg-add` |
 | `install-apps.sh` | Omarchy's own installers — VS Code, dev environments, services |
 | `install-dotfiles.sh` | Clones `~/dotfiles` and stows it into `$HOME` |
+| `install-aur.sh` | AUR packages — **last**, because source builds are slow and can fail |
 
-`install-all.sh` runs all six in order. The order is load-bearing: databases are synced
-before anything installs, preinstalls are stripped before packages are put back, and the
-dotfiles are stowed **last** so that Omarchy's own installers write their configs before
-those paths become symlinks.
+`install-all.sh` runs all seven in order, and the order is load-bearing:
+
+- databases are synced before anything installs
+- preinstalls are stripped before packages are put back
+- dotfiles are stowed **after** the Omarchy installers, so those write their own configs
+  before the paths become symlinks
+- AUR is **last**, so a multi-hour source build or a broken PKGBUILD costs you one
+  package instead of the entire setup
 
 ## Making it yours
 
