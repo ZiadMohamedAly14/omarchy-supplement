@@ -24,7 +24,7 @@ Safe to re-run. Nothing is deleted — any config Omarchy already placed is move
 
 | Script | |
 |---|---|
-| `preflight.sh` | `pacman -Syu` — a fresh machine has no sync databases, so nothing installs without this |
+| `preflight.sh` | `omarchy update` — a fresh machine has no sync databases, so nothing installs without this |
 | `remove-preinstalls.sh` | Strips Omarchy's preinstalled apps — skip with `OMARCHY_KEEP_PREINSTALLS=1` |
 | `install-stow.sh` | GNU Stow — the one thing needed before anything else |
 | `install-packages.sh` | Extra Arch packages, via `omarchy-pkg-add` / `omarchy-pkg-aur-add` |

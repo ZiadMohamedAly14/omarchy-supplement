@@ -148,6 +148,12 @@ and a fresh Omarchy machine can boot with no sync databases at all — every ins
 fails with `error: target not found`, including `stow`. That is what `preflight.sh` is
 for. Verified the hard way on a real fresh install.
 
+**Never call `pacman -Syu` directly.** Omarchy ships a pacman pre-transaction hook that
+aborts the transaction and tells you to use `omarchy update`, which also snapshots,
+refreshes keyrings, runs migrations, fires post-update hooks, and does the restart check.
+The `OMARCHY_ALLOW_DIRECT_PACMAN=1` bypass it mentions skips all of that — don't use it.
+A bare `pacman -Sy` slips past the hook but leaves a partial-upgrade state.
+
 **`remove-preinstalls.sh` breaks the "already in base" shortcut.** It strips Omarchy's
 preinstalled set, and that set overlaps the base package list — `lazydocker` is in
 `omarchy-base.packages` and still gets removed. So a package being in base is no longer
