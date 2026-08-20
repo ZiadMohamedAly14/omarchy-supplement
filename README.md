@@ -29,10 +29,12 @@ Safe to re-run. Nothing is deleted — any config Omarchy already placed is move
 | `install-stow.sh` | GNU Stow — the one thing needed before anything else |
 | `install-packages.sh` | Extra Arch packages, via `omarchy-pkg-add` |
 | `install-apps.sh` | Omarchy's own installers — VS Code, dev environments, services |
+| `install-webapps.sh` | Sites wrapped as Chromium app windows — Discord, WhatsApp |
 | `install-dotfiles.sh` | Clones `~/dotfiles` and stows it into `$HOME` |
-| `install-aur.sh` | AUR packages — **last**, because source builds are slow and can fail |
+| `install-aur.sh` | AUR packages — **late**, because source builds are slow and can fail |
+| `install-plugins.sh` | Omarchy plugins — **last**, it prompts for tokens and config |
 
-`install-all.sh` runs all seven in order, and the order is load-bearing:
+`install-all.sh` runs all nine in order, and the order is load-bearing:
 
 - databases are synced before anything installs
 - preinstalls are stripped before packages are put back

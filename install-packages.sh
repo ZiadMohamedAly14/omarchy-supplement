@@ -34,7 +34,8 @@ PACKAGES=(
   # --- genuinely additional ----------------------------------------------
   # No font package here on purpose — the stowed alacritty.toml uses
   # JetBrainsMono Nerd Font, which Omarchy already ships.
-  discord                 # in `extra`, so no AUR build needed
+  #
+  # Discord is NOT here — it is a web app, see install-webapps.sh.
 
   # android-tools         # adb/fastboot — enough for Expo Go on a real device
   # httpie
