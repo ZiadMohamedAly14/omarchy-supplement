@@ -24,6 +24,7 @@ run remove-preinstalls.sh
 run install-stow.sh
 run install-packages.sh
 run install-apps.sh
+run install-plugins.sh
 run install-dotfiles.sh
 # AUR last: source builds are the slowest and least predictable step, so a bad
 # package costs a package rather than the whole setup.

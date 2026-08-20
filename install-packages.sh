@@ -32,7 +32,8 @@ PACKAGES=(
   qt6-multimedia-ffmpeg   # prune can't take them back out
 
   # --- genuinely additional ----------------------------------------------
-  ttf-cascadia-mono-nerd  # hard-referenced by the stowed alacritty.toml
+  # No font package here on purpose — the stowed alacritty.toml uses
+  # JetBrainsMono Nerd Font, which Omarchy already ships.
   discord                 # in `extra`, so no AUR build needed
 
   # android-tools         # adb/fastboot — enough for Expo Go on a real device
