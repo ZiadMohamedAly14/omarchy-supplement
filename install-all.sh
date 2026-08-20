@@ -24,11 +24,14 @@ run remove-preinstalls.sh
 run install-stow.sh
 run install-packages.sh
 run install-apps.sh
-run install-plugins.sh
 run install-dotfiles.sh
-# AUR last: source builds are the slowest and least predictable step, so a bad
-# package costs a package rather than the whole setup.
+# AUR next-to-last: source builds are the slowest and least predictable step, so
+# a bad package costs a package rather than the whole setup.
 run install-aur.sh
+# Plugins genuinely last: they PROMPT (for API tokens, locations, confirmations)
+# and a prompt blocks forever if nobody is at the keyboard. Everything above
+# completes unattended before anything can stop and wait.
+run install-plugins.sh
 
 cat <<'DONE'
 

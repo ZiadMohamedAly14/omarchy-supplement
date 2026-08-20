@@ -17,14 +17,17 @@ AUR_PACKAGES=(
   rose-pine-hyprcursor    # Hyprland-native cursor format
   # rose-pine-cursor      # XCursor format, for XWayland/GTK apps
 
-  postman-bin             # API client — prebuilt, no compile
+  # postman-bin             # API client — prebuilt, no compile
 
-  # mongodb-compass       # DISABLED: the AUR package builds Electron from
-                          # source, which fetches the entire Chromium tree.
-                          # Hours of build time for a GUI the VS Code MongoDB
-                          # extension largely replaces. Check for a `-bin`
-                          # variant before re-enabling:  yay -Ss mongodb-compass
-  # bruno-bin             # lighter, git-friendly alternative to Postman
+  # NOT plain `mongodb-compass`. That PKGBUILD depends on electron37, which
+  # builds Chromium from source: a 29M-object clone plus a JDK/Rust/Qt5/LLVM
+  # toolchain (~1.2 GB of build deps alone) before compilation even starts.
+  # The -bin variant repackages MongoDB's own release binary instead.
+  mongodb-compass-bin     # Mongo GUI — prebuilt
+
+  # NOT plain `bruno` — same Electron trap as Compass: it pulls an electronNN
+  # and builds Chromium from source.
+  bruno-bin               # API client — prebuilt
 )
 
 if ((${#AUR_PACKAGES[@]} == 0)); then

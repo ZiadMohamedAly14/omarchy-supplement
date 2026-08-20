@@ -16,6 +16,7 @@ PACKAGES=(
   hypr
   alacritty
   starship
+  desktop   # ~/.local/share/applications overrides for Electron apps
 )
 
 if ! command -v stow &>/dev/null; then
