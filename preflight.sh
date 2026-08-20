@@ -34,9 +34,29 @@ echo "Updating via omarchy..."
 # post-update hooks, and does the restart check. Bypassing it with
 # OMARCHY_ALLOW_DIRECT_PACMAN=1 skips all of that — don't.
 #
-# A bare `pacman -Sy` would populate the databases without tripping the hook,
-# but it leaves a partial-upgrade state: the databases advertise new versions
-# while the installed libraries are still old, so a package installed right
-# afterwards can link against something that isn't on disk. On a fresh machine
-# the repos have already moved on, so that risk is real, not theoretical.
-omarchy update
+# But a full update is PREFERRED, not REQUIRED. What the rest of the bootstrap
+# actually needs is only that pacman has sync databases; without them every
+# install fails with "target not found". `omarchy update` has its own guards and
+# will refuse outright on a small disk:
+#
+#   You need at least 10 GiB free to safely update Omarchy.
+#
+# Treating that as fatal would block the entire bootstrap over a nice-to-have,
+# so fall back to a database-only sync.
+if omarchy update; then
+  exit 0
+fi
+
+echo >&2
+echo "warning: 'omarchy update' did not complete." >&2
+echo "         Falling back to a database-only sync so the bootstrap can" >&2
+echo "         continue. Re-run 'omarchy update' once the cause is resolved" >&2
+echo "         (low disk space is the usual one — it wants 10 GiB free)." >&2
+echo >&2
+
+# -Sy with no -u: not an upgrade transaction, so Omarchy's pre-transaction hook
+# does not fire. This leaves a partial-upgrade window — the databases advertise
+# newer versions than the installed libraries, so a package installed now can
+# link against something not yet on disk. Accepted deliberately: the alternative
+# is a bootstrap that cannot install anything at all.
+sudo pacman -Sy
