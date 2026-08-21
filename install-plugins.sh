@@ -37,7 +37,7 @@ fi
 
 PLUGINS=(
   "https://github.com/husamemadH/omarchy-quattro-prayer-times.git"
-  "https://github.com/Aryan-Techie/omarchy-todoist.git"
+  "https://github.com/maduki-tech/omado.git"
 
   # Needs Steam. install-apps.sh runs before this script, so uncommenting
   # "gaming steam" there is enough to satisfy it — but Steam plus its graphics
