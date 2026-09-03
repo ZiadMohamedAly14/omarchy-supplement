@@ -38,11 +38,12 @@ fi
 PLUGINS=(
   "https://github.com/husamemadH/omarchy-quattro-prayer-times.git"
   "https://github.com/maduki-tech/omado.git"
+  "https://github.com/jankeesvw/omarchy-notification-center.git"
 
   # Needs Steam. install-apps.sh runs before this script, so uncommenting
   # "gaming steam" there is enough to satisfy it — but Steam plus its graphics
   # drivers is a large install, so it is opt-in rather than implied.
-  "https://github.com/silvaio/gamemode-switcher.git"
+  # "https://github.com/silvaio/gamemode-switcher.git"
 )
 
 if ((${#PLUGINS[@]} == 0)); then
