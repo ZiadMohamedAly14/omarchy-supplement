@@ -17,58 +17,43 @@
 # ("terminal alacritty") rather than here — that also sets it as the default.
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
+
 # Official Arch repos. omarchy-pkg-add wraps `pacman -S --noconfirm --needed`.
 PACKAGES=(
   # --- put back after remove-preinstalls.sh -------------------------------
   # Omarchy ships these by default, but `omarchy remove preinstalls` takes them
   # out with everything else. They are listed here, not skipped as "already in
   # base", precisely because that script runs first.
+  #
+  # Not everything it removes comes back: cliamp (and the qt6-multimedia pair it
+  # drags in) is left out on purpose.
   omacalc
   omacut
   omawrite
-  cliamp
   lazydocker              # IS in omarchy-base.packages, and is still removed
-  qt6-multimedia          # cliamp pulls these; listed so a later orphan
-  qt6-multimedia-ffmpeg   # prune can't take them back out
 
   # --- genuinely additional ----------------------------------------------
-  # No font package here on purpose — the stowed alacritty.toml uses
-  # JetBrainsMono Nerd Font, which Omarchy already ships.
-  #
+  # System monospace font. install-apps.sh runs `omarchy-font-set` to select
+  # it, and the stowed alacritty.toml names it explicitly — all three must
+  # agree. (Omarchy's own default, JetBrainsMono Nerd Font, stays installed.)
+  ttf-cascadia-mono-nerd
+
   # Native Discord, not the Omarchy web app (which remove-preinstalls.sh strips
   # and install-webapps.sh deliberately does not restore).
   discord
 
+  # Not in base. Omarchy ships `gh` only as a mise stub in ~/.local/bin, and
+  # remove-preinstalls.sh deletes that stub — so this is the real package.
+  github-cli
+
+  yazi                    # TUI file manager
+
   # android-tools         # adb/fastboot — enough for Expo Go on a real device
   # httpie
-  # yazi
 )
 
 # AUR packages live in install-aur.sh, which runs LAST — after the dotfiles are
 # stowed — so a slow or broken source build cannot cost you the whole setup.
-
-# One bad package name fails the whole pacman transaction, and install-all.sh
-# treats a failed child as fatal — so a single typo here would abort the run
-# before install-dotfiles.sh, which is the part actually worth having.
-#
-# Batch first (one transaction, fast), then fall back to installing one at a
-# time so the rest still land and the failure is named.
-install_batch() {
-  local cmd=$1 label=$2
-  shift 2
-  (($#)) || {
-    echo "No $label packages configured."
-    return 0
-  }
-
-  echo "Installing $label: $*"
-  "$cmd" "$@" && return 0
-
-  echo "warning: batch $label install failed — retrying individually" >&2
-  local pkg
-  for pkg in "$@"; do
-    "$cmd" "$pkg" || echo "warning: '$pkg' failed to install" >&2
-  done
-}
 
 install_batch omarchy-pkg-add repo "${PACKAGES[@]}"

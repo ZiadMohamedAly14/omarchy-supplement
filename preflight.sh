@@ -12,9 +12,8 @@
 # remove-preinstalls.sh and every install-*.sh.
 set -euo pipefail
 
-# Prime the sudo timestamp so the password prompt happens here, once, rather
-# than surfacing partway through a long AUR build.
-sudo -v
+# The sudo timestamp is primed and kept alive by install-all.sh; do not `sudo -v`
+# here (or in any other child).
 
 # Set OMARCHY_SKIP_SYNC=1 to skip — useful on a back-to-back re-run.
 if [[ ${OMARCHY_SKIP_SYNC:-0} == 1 ]]; then
@@ -43,7 +42,12 @@ echo "Updating via omarchy..."
 #
 # Treating that as fatal would block the entire bootstrap over a nice-to-have,
 # so fall back to a database-only sync.
-if omarchy update; then
+#
+# `-y` matters: without it `omarchy update` runs omarchy-update-confirm, a
+# `gum confirm "Continue with update?"` that blocks until someone answers — and
+# declining silently drops into the partial-upgrade fallback below. The flag
+# sets OMARCHY_UPDATE_UNATTENDED=1 (see `omarchy update --help`).
+if omarchy update -y; then
   exit 0
 fi
 

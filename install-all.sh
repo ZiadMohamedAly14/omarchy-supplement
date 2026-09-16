@@ -13,6 +13,25 @@ run() {
   }
 }
 
+# One password prompt, here, up front — then keep the sudo timestamp alive for
+# the whole run. Without the refresh it expires (default 5–15 min) somewhere
+# inside `omarchy update` + docker pulls + node install, and yay's `pacman -U`
+# at the end re-prompts mid-AUR-build with nobody at the keyboard. The children
+# run as the same user on the same tty, so they share this timestamp; none of
+# them call `sudo -v` themselves.
+#
+# `sudo -n` never prompts: if the timestamp has somehow lapsed anyway, the loop
+# fails quietly and the next child prompts, which is no worse than before.
+sudo -v
+(
+  while kill -0 "$$" 2>/dev/null; do
+    sudo -n true 2>/dev/null
+    sleep 50
+  done
+) &
+SUDO_KEEPALIVE=$!
+trap 'kill "$SUDO_KEEPALIVE" 2>/dev/null' EXIT
+
 # Order matters:
 #   - preflight refreshes pacman's databases; without it every install below
 #     dies with "error: target not found" on a fresh machine

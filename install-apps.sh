@@ -33,20 +33,75 @@ APPS=(
 # the bootstrap unattended. The name is CASE-SENSITIVE — it is matched by a
 # `case` statement against: MySQL PostgreSQL Redis MongoDB MariaDB MSSQL.
 #
-# It is also NOT idempotent: the container name is fixed, so a second run fails
-# with "name already in use". The `|| echo warning` below absorbs that.
+# It is also NOT idempotent on its own: it is a bare `docker run --name <fixed>`,
+# so a second run fails with "name already in use". docker_db_exists() below
+# checks for the container first — names copied from the installer's `case`.
 #
 # MongoDB lands on 127.0.0.1:27017 as root admin/admin123:
 #   mongodb://admin:admin123@127.0.0.1:27017/?authSource=admin
+
+# docker_db_exists <Name> — true when the container `omarchy install docker dbs
+# <Name>` would create is already there (running or not).
+docker_db_exists() {
+  local container
+  case $1 in
+  MySQL) container=mysql8 ;;
+  PostgreSQL) container=postgres18 ;;
+  MariaDB) container=mariadb11 ;;
+  Redis) container=redis ;;
+  MongoDB) container=mongodb ;;
+  MSSQL) container=mssql ;;
+  *) return 1 ;; # unknown name — let the installer complain
+  esac
+  # The installer itself uses `sudo docker`, so sudo here adds no new prompt.
+  sudo docker ps -a --format '{{.Names}}' 2>/dev/null | grep -qx "$container"
+}
 
 if ((${#APPS[@]} == 0)); then
   echo "No Omarchy apps configured."
 else
   for app in "${APPS[@]}"; do
+    # shellcheck disable=SC2206
+    words=($app)
+    if [[ ${words[0]} == docker && ${words[1]-} == dbs ]] && docker_db_exists "${words[2]-}"; then
+      echo "──  omarchy install $app — container already exists, skipping"
+      continue
+    fi
+
     echo "──  omarchy install $app"
     # shellcheck disable=SC2086
     omarchy install $app || echo "warning: 'omarchy install $app' failed" >&2
   done
+fi
+
+# --- font -------------------------------------------------------------------
+# Select the system monospace font (install-packages.sh installs the package).
+# omarchy-font-set writes ~/.config/fontconfig/fonts.conf — the source of truth
+# the shell, Qt and everything resolving "monospace" read — and `sed -i`s the
+# font family into any terminal configs it finds.
+#
+# ORDER MATTERS: that sed does not follow symlinks, so run against a stowed
+# ~/.config/alacritty/alacritty.toml it silently replaces the link with a plain
+# file and the dotfiles stop tracking it. Here it runs BEFORE install-dotfiles.sh,
+# so it only ever edits Omarchy's stock alacritty.toml, which stow then backs up
+# and replaces with the dotfiles copy (which already names this font). Never
+# run `omarchy font set` / Setup > Font after the dotfiles are in — edit the
+# dotfiles instead.
+#
+# The same hazard applies to a RE-RUN: by then alacritty.toml is the symlink, so
+# this must not fire again. fonts.conf naming the font is the "already done"
+# signal — it is the file omarchy-font-set writes, and nothing else touches it.
+#
+# Not `omarchy install font`: that one wraps the same steps in a floating GUI
+# terminal, which an unattended script cannot drive.
+FONT="CaskaydiaMono Nerd Font"
+FONTCONF="$HOME/.config/fontconfig/fonts.conf"
+if grep -Fq -- "<string>$FONT</string>" "$FONTCONF" 2>/dev/null; then
+  echo "font already set to '$FONT'"
+elif fc-list | grep -Fqi -- "$FONT"; then
+  omarchy-font-set "$FONT" || echo "warning: could not set the system font" >&2
+else
+  echo "warning: '$FONT' not installed — is ttf-cascadia-mono-nerd in install-packages.sh?" >&2
 fi
 
 # --- defaults -------------------------------------------------------------

@@ -18,26 +18,36 @@ if [[ ${OMARCHY_KEEP_PREINSTALLS:-0} == 1 ]]; then
   exit 0
 fi
 
-# Prime the sudo timestamp so the password prompt happens here, once, instead of
-# surfacing partway through a later script.
-sudo -v
+# Omarchy records that the removal happened, and its inverse (`omarchy install
+# preinstalls`) deletes the marker again. Honour it: without this guard every
+# re-run strips omacalc/omacut/omawrite/lazydocker/WhatsApp and reloads Hyprland,
+# only for install-packages.sh and install-webapps.sh to put them straight back
+# — two opposing pacman transactions for zero net change.
+MARKER="$HOME/.local/state/omarchy/preinstalls-removed"
+if [[ -e $MARKER ]]; then
+  echo "preinstalls already removed (${MARKER#"$HOME"/} exists) — nothing to do"
+  exit 0
+fi
 
-# Pacman asks ":: Do you want to remove these packages? [Y/n]" and an unattended
-# bootstrap must not block on it, so `yes` pre-answers.
+# The sudo timestamp is primed and kept alive by install-all.sh.
+
+# `omarchy remove preinstalls` opens with `gum confirm "Are you sure…"` (not a
+# pacman [Y/n] — its package removals go through omarchy-pkg-drop, which is
+# already --noconfirm). An unattended bootstrap must not block on it, so `yes`
+# pre-answers. There is no --yes flag on this command; check again after an
+# update in case one appears:
+#   grep -nE 'ASSUME_YES|--yes' /usr/bin/omarchy-remove-preinstalls
 #
 # Two subtleties, both of which look like bugs if you hit them cold:
 #
 #   1. `yes` is killed by SIGPIPE the moment the consumer exits, so the
 #      pipeline's own exit status describes `yes`, not the removal. The real
 #      status is PIPESTATUS[1].
-#   2. `set -e` is lifted across the pipeline. A second run has nothing left to
-#      remove and may exit non-zero; install-all.sh treats a failed child as
-#      fatal, so that would break idempotency.
+#   2. `set -e` is lifted across the pipeline, and a non-zero exit here must not
+#      abort install-all.sh — it treats a failed child as fatal.
 #
-# `yes` blanket-approves EVERY prompt, not just the pacman one. If a future
-# Omarchy version adds its own confirmation here, this answers that too. Prefer
-# a real non-interactive flag if one ever appears:
-#   grep -nE 'noconfirm|--yes' /usr/share/omarchy/bin/omarchy-remove-preinstalls
+# `yes` blanket-approves EVERY prompt, not just that one. If a future Omarchy
+# version adds another confirmation here, this answers that too.
 set +e
 yes | omarchy remove preinstalls
 rc=${PIPESTATUS[1]}

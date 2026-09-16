@@ -11,11 +11,18 @@
 # instead of compiling, which is the difference between seconds and hours.
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
+
 AUR_PACKAGES=(
   # Cursor theme. Selected by HYPRCURSOR_THEME in the dotfiles' looknfeel.lua —
   # if you rename one, rename the other or you get the default cursor back.
   rose-pine-hyprcursor    # Hyprland-native cursor format
   # rose-pine-cursor      # XCursor format, for XWayland/GTK apps
+
+  # NVIDIA digital vibrance. The dotfiles' autostart.lua runs `nvibrant 614` on
+  # login; without this package that line silently does nothing. Prebuilt, only
+  # Python deps. NVIDIA-only — drop it (and the autostart line) on other GPUs.
+  nvibrant-bin
 
   # postman-bin             # API client — prebuilt, no compile
 
@@ -30,17 +37,4 @@ AUR_PACKAGES=(
   bruno-bin               # API client — prebuilt
 )
 
-if ((${#AUR_PACKAGES[@]} == 0)); then
-  echo "No AUR packages configured."
-  exit 0
-fi
-
-# One bad name fails the whole batch, so fall back to installing individually —
-# the rest still land and the failure gets named.
-echo "Installing from AUR: ${AUR_PACKAGES[*]}"
-if ! omarchy-pkg-aur-add "${AUR_PACKAGES[@]}"; then
-  echo "warning: batch AUR install failed — retrying individually" >&2
-  for pkg in "${AUR_PACKAGES[@]}"; do
-    omarchy-pkg-aur-add "$pkg" || echo "warning: '$pkg' failed to install" >&2
-  done
-fi
+install_batch omarchy-pkg-aur-add AUR "${AUR_PACKAGES[@]}"
