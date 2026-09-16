@@ -2,14 +2,11 @@
 # Omarchy web apps — a site wrapped in a Chromium app window with its own
 # desktop entry, launcher icon and window class.
 #
-# Cheaper than the native package in every way that matters here: Discord's
-# Arch package is an Electron bundle (~100 MB plus a second Chromium at
-# runtime), while the web app reuses the Chromium already in base.
-#
 # Omarchy ships a set of these by default and remove-preinstalls.sh strips them,
-# which is why Discord and WhatsApp have to be put back explicitly:
-#   Removing web app: Discord
+# which is why WhatsApp has to be put back explicitly:
 #   Removing web app: WhatsApp
+#
+# Discord is NOT a web app here — the native package is in install-packages.sh.
 set -euo pipefail
 
 # `webapp` is a TOP-LEVEL command group, not a subcommand of `omarchy install`.
@@ -24,17 +21,15 @@ WEBAPP_CMD=(omarchy webapp install)
 # The installer takes exactly these two arguments; it sources the icon itself.
 #
 # URLs are copied verbatim from Omarchy's own definitions in
-# /usr/share/omarchy/applications/{Discord,WhatsApp}.desktop. Note Discord's is
-# /channels/@me, not /app.
+# /usr/share/omarchy/applications/WhatsApp.desktop.
 #
 # Caveat on icons: those same desktop files use curated icon-theme names
-# (Icon=omarchy-discord, Icon=whatsapp) which a two-argument install cannot
-# reproduce, so the launcher icons may differ from stock Omarchy. If that
-# bothers you, copy Omarchy's entries instead of installing them:
-#   cp /usr/share/omarchy/applications/{Discord,WhatsApp}.desktop \
+# (Icon=whatsapp) which a two-argument install cannot reproduce, so the
+# launcher icons may differ from stock Omarchy. If that bothers you, copy
+# Omarchy's entries instead of installing them:
+#   cp /usr/share/omarchy/applications/WhatsApp.desktop \
 #      ~/.local/share/applications/
 WEBAPPS=(
-  "Discord|https://discord.com/channels/@me"
   "WhatsApp|https://web.whatsapp.com/"
 )
 
@@ -53,7 +48,7 @@ for entry in "${WEBAPPS[@]}"; do
   # Prefer Omarchy's own entry when it ships one. `omarchy webapp install` takes
   # only a name and a URL and sources the icon from the site's favicon — which
   # WhatsApp does not serve, so it lands with no icon at all. Omarchy's shipped
-  # entries hardcode curated icon-theme names (Icon=whatsapp, Icon=omarchy-discord)
+  # entries hardcode curated icon-theme names (Icon=whatsapp)
   # and are exactly what `remove preinstalls` deleted from $APPDIR in the first
   # place. Copying them back is both correct and unguessable-free.
   if [[ -r $template ]]; then

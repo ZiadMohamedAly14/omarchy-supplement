@@ -35,7 +35,9 @@ PACKAGES=(
   # No font package here on purpose — the stowed alacritty.toml uses
   # JetBrainsMono Nerd Font, which Omarchy already ships.
   #
-  # Discord is NOT here — it is a web app, see install-webapps.sh.
+  # Native Discord, not the Omarchy web app (which remove-preinstalls.sh strips
+  # and install-webapps.sh deliberately does not restore).
+  discord
 
   # android-tools         # adb/fastboot — enough for Expo Go on a real device
   # httpie

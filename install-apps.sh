@@ -17,8 +17,9 @@ APPS=(
   "editor vscode"        # + Omarchy theme, secret storage, auto-update off
   "dev-env node"         # via mise; brings npm/npx
   "docker dbs MongoDB"   # see the note below before changing this
-
-  # No browser entry on purpose — Omarchy's stock Chromium is the browser.
+  "browser brave-origin" # AUR brave-origin-bin + Omarchy's flags, policy dir,
+                         # theme hook and bundled extensions (copy-url, yt-dlp).
+                         # Does NOT set the default — see below.
 
   # "dev-env bun"
   # "dev-env java"       # only for native React Native / Android builds
@@ -50,13 +51,35 @@ fi
 
 # --- defaults -------------------------------------------------------------
 # `omarchy install terminal alacritty` already sets the terminal default, so
-# there is no `omarchy default terminal` line here. The browser default is left
-# alone too — Omarchy's stock Chromium is already it.
+# there is no `omarchy default terminal` line here. The browser installer does
+# NOT — it prints "make it the default via Setup > Defaults > Browser" — hence
+# the explicit line below.
 #
 # Note: remove-preinstalls.sh drops the TUI menu entries (Docker, Disk Usage)
 # and they are deliberately not restored. install-packages.sh still reinstalls
 # lazydocker, so the binary is there — it just isn't in `omarchy menu`.
-# Guarded: if the vscode install above failed, `code` does not exist and this
-# would exit non-zero under `set -e`, aborting the bootstrap before the dotfiles
-# are ever stowed.
+# `omarchy default editor` does not touch xdg-settings — it just writes the
+# name to ~/.local/state/omarchy/defaults/editor for omarchy-launch-editor to
+# read, and it does not check that `code` exists. So it cannot fail on a missing
+# install; the guard is only there so an unexpected error cannot abort the run
+# under `set -e` before the dotfiles are stowed.
 omarchy default editor code || echo "warning: could not set the default editor" >&2
+
+# Only after Brave Origin is actually installed: `omarchy default browser` is a
+# bare `xdg-settings set`, which happily points at a desktop file that does not
+# exist — and the chromium removal below must never leave the box browserless.
+if omarchy-pkg-present brave-origin-bin; then
+  omarchy default browser brave-origin ||
+    echo "warning: could not set the default browser" >&2
+
+  # Drop Omarchy's stock Chromium now that Brave Origin has replaced it. It IS
+  # in omarchy-base.packages, but nothing reinstalls base on `omarchy update`,
+  # so it stays gone. There is no `omarchy remove browser chromium`;
+  # omarchy-pkg-drop is a no-op when the package is already absent, so this is
+  # idempotent. Web apps keep working: omarchy-launch-webapp uses whichever
+  # Chromium-family browser is the XDG default, and `brave*` matches.
+  omarchy-pkg-drop chromium ||
+    echo "warning: could not remove chromium" >&2
+else
+  echo "warning: brave-origin-bin not installed — keeping chromium as the browser" >&2
+fi
