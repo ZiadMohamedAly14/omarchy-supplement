@@ -74,6 +74,23 @@ else
   done
 fi
 
+# --- docker launcher --------------------------------------------------------
+# remove-preinstalls.sh deletes every TUI launcher entry. install-packages.sh
+# reinstalls lazydocker, so put its entry back too: it runs lazydocker through
+# omarchy-launch-docker-tui, which prompts for daemon access — your user is not
+# in the docker group, so plain `lazydocker` cannot reach the socket. The other
+# TUI entries stay gone on purpose. SUPER+SHIFT+D is restored in the dotfiles.
+DOCKER_ENTRY=/usr/share/omarchy/applications/Docker.desktop
+if [[ -r $DOCKER_ENTRY ]]; then
+  mkdir -p "$HOME/.local/share/applications"
+  cp -f "$DOCKER_ENTRY" "$HOME/.local/share/applications/" ||
+    echo "warning: could not restore the Docker launcher entry" >&2
+  command -v update-desktop-database &>/dev/null &&
+    update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
+else
+  echo "warning: $DOCKER_ENTRY not found — Docker launcher entry not restored" >&2
+fi
+
 # --- font -------------------------------------------------------------------
 # Select the system monospace font (install-packages.sh installs the package).
 # omarchy-font-set writes ~/.config/fontconfig/fonts.conf — the source of truth
@@ -110,9 +127,6 @@ fi
 # NOT — it prints "make it the default via Setup > Defaults > Browser" — hence
 # the explicit line below.
 #
-# Note: remove-preinstalls.sh drops the TUI menu entries (Docker, Disk Usage)
-# and they are deliberately not restored. install-packages.sh still reinstalls
-# lazydocker, so the binary is there — it just isn't in `omarchy menu`.
 # `omarchy default editor` does not touch xdg-settings — it just writes the
 # name to ~/.local/state/omarchy/defaults/editor for omarchy-launch-editor to
 # read, and it does not check that `code` exists. So it cannot fail on a missing
